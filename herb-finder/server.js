@@ -1,49 +1,43 @@
 const express = require("express");
-const fs = require("fs");
-const csv = require("csv-parser");
-const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// Enable CORS
-app.use(cors());
+app.post("/ussd", (req, res) => {
+	// Parse the request parameters from Africa's Talking
+	const { sessionId, serviceCode, phoneNumber, text } = req.body;
 
-// Load the dataset into memory
-let herbsData = [];
+	// Implement USSD menu logic here
+	let response = "";
 
-// Read and parse the CSV file
-fs.createReadStream("herbs_dataset.csv")
-	.pipe(csv())
-	.on("data", (row) => {
-		herbsData.push(row);
-	})
-	.on("end", () => {
-		console.log("CSV file successfully processed");
-	});
+	if (text === "") {
+		// Initial Menu
+		response = `CON Welcome to Herb Finder!
+        1. Find herbs by symptoms
+        2. Browse common herbs
+        3. Learn about herbal care`;
+	} else if (text === "1") {
+		response = `CON Select a symptom:
+        1. Headache
+        2. Cough
+        3. Fever`;
+	} else if (text === "1*1") {
+		response = `END Recommended herb for headache: Ginger`;
+	} else if (text === "2") {
+		response = `CON Select an herb:
+        1. Aloe Vera
+        2. Turmeric
+        3. Ginger`;
+	} else {
+		response = `END Invalid choice. Please try again.`;
+	}
 
-// Define the API endpoint
-app.get("/herbs", (req, res) => {
-	const { symptom, region, season } = req.query;
-
-	// Filter herbs based on user selections
-	const filteredHerbs = herbsData.filter((herb) => {
-		const matchesSymptom = symptom
-			? herb["Traditional Use"].toLowerCase().includes(symptom.toLowerCase())
-			: true;
-		const matchesRegion = region
-			? herb["Region"].toLowerCase().includes(region.toLowerCase())
-			: true;
-		const matchesSeason = season
-			? herb["Season"].toLowerCase().includes(season.toLowerCase())
-			: true;
-		return matchesSymptom && matchesRegion && matchesSeason;
-	});
-
-	res.json(filteredHerbs);
+	res.set("Content-Type", "text/plain");
+	res.send(response);
 });
 
-// Start the server
-app.listen(PORT, () => {
-	console.log(`Server is running on http://localhost:${PORT}`);
+const port = 3000;
+app.listen(port, () => {
+	console.log(`USSD app running on port ${port}`);
 });
