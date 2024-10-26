@@ -6,7 +6,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Test request handlers
 app.get("/api/test", function (req, res) {
-	res.send("Testing request");
+	res.send("Test request sabza");
 });
 
 app.post("/ussd", (req, res) => {
@@ -18,7 +18,7 @@ app.post("/ussd", (req, res) => {
 	if (text == "") {
 		// This is the first request. Note how we start the response with CON
 		response = `CON What would you like to check
-        1. My account
+        1. My account joh
         2. My phone number`;
 	} else if (text == "1") {
 		// Business logic for first level response
