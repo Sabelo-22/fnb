@@ -1,9 +1,13 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Test request handlers
+app.get("/api/test", function (req, res) {
+	res.send("Test request");
+});
 
 app.post("/ussd", (req, res) => {
 	// Read the variables sent via POST from our API
@@ -34,4 +38,12 @@ app.post("/ussd", (req, res) => {
 	// Send the response back to the API
 	res.set("Content-Type: text/plain");
 	res.send(response);
+});
+
+// PORT
+const PORT = process.env.PORT || 3000;
+
+// APP Listen
+app.listen(PORT, () => {
+	console.log(`Server is running on http://localhost:${PORT}`);
 });
