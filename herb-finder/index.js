@@ -49,15 +49,35 @@ app.post("/ussd", (req, res) => {
 		const seasonalHerbs = "1. Rooibos\n2. Marula\n3. Baobab"; // Placeholder for actual seasonal herbs
 		response = `CON For ${season}, we recommend the following herbs:
     ${seasonalHerbs}\nReply with the number for more details.`;
-	} else if (text == "1*1") {
+	} else if (text.startsWith("1*1")) {
 		// User selects a specific herb for details
 		const herbDetails =
 			"Ginger (Zingiber officinale): Traditional Use: Anti-inflammatory. Preparation: Fresh tea.";
 		response = `END ${herbDetails}`;
-	} else if (text == "2*1") {
+	} else if (text.startsWith("1*2")) {
+		// User selects the second herb for details
+		const herbDetails =
+			"Aloe Vera (Aloe barbadensis): Traditional Use: Healing. Preparation: Gel or juice.";
+		response = `END ${herbDetails}`;
+	} else if (text.startsWith("1*3")) {
+		// User selects the third herb for details
+		const herbDetails =
+			"Peppermint (Mentha piperita): Traditional Use: Calming. Preparation: Brewed tea.";
+		response = `END ${herbDetails}`;
+	} else if (text.startsWith("2*1")) {
 		// User selects a specific seasonal herb for details
 		const seasonalHerbDetails =
 			"Rooibos (Aspalathus linearis): Traditional Use: Antioxidant. Preparation: Brewed as tea.";
+		response = `END ${seasonalHerbDetails}`;
+	} else if (text.startsWith("2*2")) {
+		// User selects the second seasonal herb for details
+		const seasonalHerbDetails =
+			"Marula (Sclerocarya birrea): Traditional Use: Nutritional support. Preparation: Eaten raw or as juice.";
+		response = `END ${seasonalHerbDetails}`;
+	} else if (text.startsWith("2*3")) {
+		// User selects the third seasonal herb for details
+		const seasonalHerbDetails =
+			"Baobab (Adansonia digitata): Traditional Use: Nutritional support. Preparation: Powdered fruit.";
 		response = `END ${seasonalHerbDetails}`;
 	} else {
 		// Handle unrecognized input
@@ -65,7 +85,7 @@ app.post("/ussd", (req, res) => {
 	}
 
 	// Send the response back to the API
-	res.set("Content-Type: text/plain");
+	res.set("Content-Type", "text/plain"); // Corrected header
 	res.send(response);
 });
 
