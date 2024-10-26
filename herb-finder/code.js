@@ -1,49 +1,78 @@
 const express = require("express");
-const fs = require("fs");
-const csv = require("csv-parser");
-const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Enable CORS
-app.use(cors());
-
-// Load the dataset into memory
-let herbsData = [];
-
-// Read and parse the CSV file
-fs.createReadStream("herbs_dataset.csv")
-	.pipe(csv())
-	.on("data", (row) => {
-		herbsData.push(row);
-	})
-	.on("end", () => {
-		console.log("CSV file successfully processed");
-	});
-
-// Define the API endpoint
-app.get("/herbs", (req, res) => {
-	const { symptom, region, season } = req.query;
-
-	// Filter herbs based on user selections
-	const filteredHerbs = herbsData.filter((herb) => {
-		const matchesSymptom = symptom
-			? herb["Traditional Use"].toLowerCase().includes(symptom.toLowerCase())
-			: true;
-		const matchesRegion = region
-			? herb["Region"].toLowerCase().includes(region.toLowerCase())
-			: true;
-		const matchesSeason = season
-			? herb["Season"].toLowerCase().includes(season.toLowerCase())
-			: true;
-		return matchesSymptom && matchesRegion && matchesSeason;
-	});
-
-	res.json(filteredHerbs);
+// Test request handlers
+app.get("/api/test", function (req, res) {
+	res.send("Test request sabza");
 });
 
-// Start the server
+app.post("/ussd", (req, res) => {
+	// Read the variables sent via POST from our API
+	const { sessionId, serviceCode, phoneNumber, text } = req.body;
+
+	let response = "";
+
+	if (text == "") {
+		// This is the first request. Start the response with CON
+		response = `CON Welcome to the Herb Finder App.
+    Please select an option:
+    1. Find herbs for ailments
+    2. View seasonal herbs
+    3. Exit`;
+	} else if (text == "1") {
+		// User selects to find herbs for ailments
+		response = `CON Please enter your symptoms separated by commas (e.g., headache, cough).`;
+	} else if (text == "2") {
+		// User selects to view seasonal herbs
+		response = `CON Please select a season:
+    1. Summer
+    2. Autumn
+    3. Winter
+    4. Spring`;
+	} else if (text == "3") {
+		// User selects to exit
+		response = `END Thank you for using Herb Finder! Goodbye!`;
+	} else if (text.startsWith("1*")) {
+		// This is a second-level response where the user has entered symptoms
+		const symptoms = text.split("*").slice(1).join(", ");
+		// Logic to get herb recommendations based on symptoms
+		const recommendedHerbs = "1. Ginger\n2. Aloe Vera\n3. Peppermint"; // Placeholder for actual recommendations
+		response = `CON Based on your symptoms (${symptoms}), we recommend the following herbs:
+    ${recommendedHerbs}\nReply with the number for more details.`;
+	} else if (text.startsWith("2*")) {
+		// User selected a season to view herbs
+		const season = text.split("*")[1];
+		// Logic to get seasonal herb recommendations
+		const seasonalHerbs = "1. Rooibos\n2. Marula\n3. Baobab"; // Placeholder for actual seasonal herbs
+		response = `CON For ${season}, we recommend the following herbs:
+    ${seasonalHerbs}\nReply with the number for more details.`;
+	} else if (text == "1*1") {
+		// User selects a specific herb for details
+		const herbDetails =
+			"Ginger (Zingiber officinale): Traditional Use: Anti-inflammatory. Preparation: Fresh tea.";
+		response = `END ${herbDetails}`;
+	} else if (text == "2*1") {
+		// User selects a specific seasonal herb for details
+		const seasonalHerbDetails =
+			"Rooibos (Aspalathus linearis): Traditional Use: Antioxidant. Preparation: Brewed as tea.";
+		response = `END ${seasonalHerbDetails}`;
+	} else {
+		// Handle unrecognized input
+		response = `END Invalid selection. Please try again.`;
+	}
+
+	// Send the response back to the API
+	res.set("Content-Type: text/plain");
+	res.send(response);
+});
+
+// PORT
+const PORT = process.env.PORT || 3000;
+
+// APP Listen
 app.listen(PORT, () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
 });
