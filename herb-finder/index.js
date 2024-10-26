@@ -16,23 +16,52 @@ app.post("/ussd", (req, res) => {
 	let response = "";
 
 	if (text == "") {
-		// This is the first request. Note how we start the response with CON
-		response = `CON What would you like to check
-        1. My account joh
-        2. My phone number`;
+		// This is the first request. Start the response with CON
+		response = `CON Welcome to the Herb Finder App.
+    Please select an option:
+    1. Find herbs for ailments
+    2. View seasonal herbs
+    3. Exit`;
 	} else if (text == "1") {
-		// Business logic for first level response
-		response = `CON Choose account information you want to view
-        1. Account number`;
+		// User selects to find herbs for ailments
+		response = `CON Please enter your symptoms separated by commas (e.g., headache, cough).`;
 	} else if (text == "2") {
-		// Business logic for first level response
-		// This is a terminal request. Note how we start the response with END
-		response = `END Your phone number is ${phoneNumber}`;
+		// User selects to view seasonal herbs
+		response = `CON Please select a season:
+    1. Summer
+    2. Autumn
+    3. Winter
+    4. Spring`;
+	} else if (text == "3") {
+		// User selects to exit
+		response = `END Thank you for using Herb Finder! Goodbye!`;
+	} else if (text.startsWith("1*")) {
+		// This is a second-level response where the user has entered symptoms
+		const symptoms = text.split("*").slice(1).join(", ");
+		// Logic to get herb recommendations based on symptoms
+		const recommendedHerbs = "1. Ginger\n2. Aloe Vera\n3. Peppermint"; // Placeholder for actual recommendations
+		response = `CON Based on your symptoms (${symptoms}), we recommend the following herbs:
+    ${recommendedHerbs}\nReply with the number for more details.`;
+	} else if (text.startsWith("2*")) {
+		// User selected a season to view herbs
+		const season = text.split("*")[1];
+		// Logic to get seasonal herb recommendations
+		const seasonalHerbs = "1. Rooibos\n2. Marula\n3. Baobab"; // Placeholder for actual seasonal herbs
+		response = `CON For ${season}, we recommend the following herbs:
+    ${seasonalHerbs}\nReply with the number for more details.`;
 	} else if (text == "1*1") {
-		// This is a second level response where the user selected 1 in the first instance
-		const accountNumber = "ACC100101";
-		// This is a terminal request. Note how we start the response with END
-		response = `END Your account number is ${accountNumber}`;
+		// User selects a specific herb for details
+		const herbDetails =
+			"Ginger (Zingiber officinale): Traditional Use: Anti-inflammatory. Preparation: Fresh tea.";
+		response = `END ${herbDetails}`;
+	} else if (text == "2*1") {
+		// User selects a specific seasonal herb for details
+		const seasonalHerbDetails =
+			"Rooibos (Aspalathus linearis): Traditional Use: Antioxidant. Preparation: Brewed as tea.";
+		response = `END ${seasonalHerbDetails}`;
+	} else {
+		// Handle unrecognized input
+		response = `END Invalid selection. Please try again.`;
 	}
 
 	// Send the response back to the API
