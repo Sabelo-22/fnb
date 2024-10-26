@@ -6,7 +6,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Test request handlers
 app.get("/api/test", function (req, res) {
-	res.send("Test request");
+	res.send("Testing request");
 });
 
 app.post("/ussd", (req, res) => {
