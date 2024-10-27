@@ -16,73 +16,52 @@ app.post("/ussd", (req, res) => {
 	let response = "";
 
 	if (text == "") {
-		// This is the first request. Start the response with CON
+		// Initial menu options
 		response = `CON Welcome to the Herb Finder App IMBEWU.
-     Access Natural Remedies bae on symptoms, Location and season:
-    1. Get Started
-    2. About This App
-    3. Exit`;
+	Access Natural Remedies based on symptoms, Location, and season:
+	1. Get Started
+	2. About This App
+	3. Exit`;
 	} else if (text == "1") {
 		// User selects to find herbs for ailments
 		response = `CON Select your primary symptom:
-    1. Headache
-    2. Fever
-    3. Stomachache
-    4. Cough
-    5. Other (type in)
-    `;
+	1. Headache
+	2. Fever
+	3. Stomachache
+	4. Cough
+	5. Other (type in)`;
 	} else if (text == "2") {
-		// User selects to view seasonal herbs
+		// About the app
 		response = `CON This app offers herb recommendations for common ailments.
-    Our suggestions are based on traditional South African herbal medicine, customized to your needs.
-    Press any key to continue.`;
+	Our suggestions are based on traditional South African herbal medicine, customized to your needs.
+	Press any key to continue.`;
 	} else if (text == "3") {
-		// User selects to exit
+		// Exit the app
 		response = `END Thank you for using IMBEWU! Goodbye!`;
-	} else if (text.startsWith("1*")) {
-		// This is a second-level response where the user has entered symptoms
-		const symptoms = text.split("*").slice(1).join(", ");
-		// Logic to get herb recommendations based on symptoms
-		const recommendedHerbs = "1. Ginger\n2. Aloe Vera\n3. Peppermint"; // Placeholder for actual recommendations
-		response = `CON Based on your symptoms (${symptoms}), we recommend the following herbs:
-    ${recommendedHerbs}\nReply with the number for more details.`;
-	} else if (text.startsWith("2*")) {
-		// User selected a season to view herbs
-		const season = text.split("*")[1];
-		// Logic to get seasonal herb recommendations
-		const seasonalHerbs = "1. Rooibos\n2. Marula\n3. Baobab"; // Placeholder for actual seasonal herbs
-		response = `CON For ${season}, we recommend the following herbs:
-    ${seasonalHerbs}\nReply with the number for more details.`;
 	} else if (text.startsWith("1*1")) {
-		// User selects a specific herb for details
-		const herbDetails =
-			"Ginger (Zingiber officinale): Traditional Use: Anti-inflammatory. Preparation: Fresh tea.";
-		response = `END ${herbDetails}`;
+		// Headache selected
+		response = `END Recommended Herb for Headache:
+	Ginger - Anti-inflammatory, soothing tea.`;
 	} else if (text.startsWith("1*2")) {
-		// User selects the second herb for details
-		const herbDetails =
-			"Aloe Vera (Aloe barbadensis): Traditional Use: Healing. Preparation: Gel or juice.";
-		response = `END ${herbDetails}`;
+		// Fever selected
+		response = `END Recommended Herb for Fever:
+	Baobab - High in vitamin C, promotes immune health.`;
 	} else if (text.startsWith("1*3")) {
-		// User selects the third herb for details
-		const herbDetails =
-			"Peppermint (Mentha piperita): Traditional Use: Calming. Preparation: Brewed tea.";
-		response = `END ${herbDetails}`;
-	} else if (text.startsWith("2*1")) {
-		// User selects a specific seasonal herb for details
-		const seasonalHerbDetails =
-			"Rooibos (Aspalathus linearis): Traditional Use: Antioxidant. Preparation: Brewed as tea.";
-		response = `END ${seasonalHerbDetails}`;
-	} else if (text.startsWith("2*2")) {
-		// User selects the second seasonal herb for details
-		const seasonalHerbDetails =
-			"Marula (Sclerocarya birrea): Traditional Use: Nutritional support. Preparation: Eaten raw or as juice.";
-		response = `END ${seasonalHerbDetails}`;
-	} else if (text.startsWith("2*3")) {
-		// User selects the third seasonal herb for details
-		const seasonalHerbDetails =
-			"Baobab (Adansonia digitata): Traditional Use: Nutritional support. Preparation: Powdered fruit.";
-		response = `END ${seasonalHerbDetails}`;
+		// Stomachache selected
+		response = `END Recommended Herb for Stomachache:
+	Peppermint - Calms digestive issues, brewed as tea.`;
+	} else if (text.startsWith("1*4")) {
+		// Cough selected
+		response = `END Recommended Herb for Cough:
+	Honeybush - Relieves cough symptoms, brewed as tea.`;
+	} else if (text.startsWith("1*5")) {
+		// Other symptom
+		response = `CON Please type in your specific symptom (e.g., nausea).`;
+	} else if (text.startsWith("1*5*")) {
+		// Custom symptom entered by the user
+		const customSymptom = text.split("*").slice(2).join(" ");
+		// Placeholder logic for handling a custom symptom
+		response = `END We recommend exploring general herbal teas for symptoms like "${customSymptom}".`;
 	} else {
 		// Handle unrecognized input
 		response = `END Invalid selection. Please try again.`;
