@@ -142,7 +142,7 @@ app.post("/ussd", async (req, res) => {
 		// Call OpenAI API for recommendation
 		try {
 			const openaiResponse = await openai.createCompletion({
-				model: "text-davinci-003",
+				model: "gpt-4o",
 				prompt: prompt,
 				max_tokens: 100,
 			});
