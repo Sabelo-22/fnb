@@ -16,56 +16,124 @@ app.post("/ussd", (req, res) => {
 	let response = "";
 
 	if (text == "") {
-		// This is the first request. Start the response with CON
-		response = `CON Welcome to the Herb Finder App.
-    Please select an option:
-    1. Find herbs for ailments
-    2. View seasonal herbs
-    3. Exit`;
+		// Initial menu options
+		response = `CON Welcome to the Herb Finder App IMBEWU.
+	Access Natural Remedies based on symptoms, location, season, allergies, and age:
+	1. Get Started
+	2. About This App
+	3. Exit`;
 	} else if (text == "1") {
-		// User selects to find herbs for ailments
-		response = `CON Please enter your symptoms separated by commas (e.g., headache, cough).`;
+		// User selects to get started and picks symptom
+		response = `CON Select your primary symptom:
+	1. Headache
+	2. Fever
+	3. Stomachache
+	4. Cough
+	5. Other (type in)
+	0. Back`;
 	} else if (text == "2") {
-		// User selects to view seasonal herbs
-		response = `CON Please select a season:
-    1. Summer
-    2. Autumn
-    3. Winter
-    4. Spring`;
+		// About the app
+		response = `CON This app offers herb recommendations for common ailments.
+	Our suggestions are based on traditional South African herbal medicine, customized to your needs.
+	Press any key to continue.
+	0. Back`;
 	} else if (text == "3") {
-		// User selects to exit
-		response = `END Thank you for using Herb Finder! Goodbye!`;
-	} else if (text.startsWith("1*")) {
-		// This is a second-level response where the user has entered symptoms
-		const symptoms = text.split("*").slice(1).join(", ");
-		// Logic to get herb recommendations based on symptoms
-		const recommendedHerbs = "1. Ginger\n2. Aloe Vera\n3. Peppermint"; // Placeholder for actual recommendations
-		response = `CON Based on your symptoms (${symptoms}), we recommend the following herbs:
-    ${recommendedHerbs}\nReply with the number for more details.`;
-	} else if (text.startsWith("2*")) {
-		// User selected a season to view herbs
-		const season = text.split("*")[1];
-		// Logic to get seasonal herb recommendations
-		const seasonalHerbs = "1. Rooibos\n2. Marula\n3. Baobab"; // Placeholder for actual seasonal herbs
-		response = `CON For ${season}, we recommend the following herbs:
-    ${seasonalHerbs}\nReply with the number for more details.`;
-	} else if (text == "1*1") {
-		// User selects a specific herb for details
-		const herbDetails =
-			"Ginger (Zingiber officinale): Traditional Use: Anti-inflammatory. Preparation: Fresh tea.";
-		response = `END ${herbDetails}`;
-	} else if (text == "2*1") {
-		// User selects a specific seasonal herb for details
-		const seasonalHerbDetails =
-			"Rooibos (Aspalathus linearis): Traditional Use: Antioxidant. Preparation: Brewed as tea.";
-		response = `END ${seasonalHerbDetails}`;
+		// Exit the app
+		response = `END Thank you for using IMBEWU! Goodbye!`;
+	} else if (text.startsWith("1*") && text.split("*").length === 2) {
+		// After symptom selection, ask for province
+		response = `CON Select your province:
+	1. Gauteng
+	2. Western Cape
+	3. KwaZulu-Natal
+	4. Eastern Cape
+	5. Free State
+	6. Limpopo
+	7. Mpumalanga
+	8. North West
+	9. Northern Cape
+	0. Back`;
+	} else if (text.startsWith("1*") && text.split("*").length === 3) {
+		// After province selection, ask for season
+		response = `CON Select the season:
+	1. Summer
+	2. Autumn
+	3. Winter
+	4. Spring
+	0. Back`;
+	} else if (text.startsWith("1*") && text.split("*").length === 4) {
+		// After season selection, ask about allergies
+		response = `CON Do you have any allergies? 
+	1. Yes
+	2. No
+	0. Back`;
+	} else if (
+		text.startsWith("1*") &&
+		text.endsWith("*1") &&
+		text.split("*").length === 5
+	) {
+		// If user has allergies, ask to specify
+		response = `CON Please specify your allergies (e.g., pollen, nuts):
+	0. Back`;
+	} else if (
+		text.startsWith("1*") &&
+		(text.endsWith("*2") || text.split("*").length === 6)
+	) {
+		// After allergies information, ask for age
+		response = `CON Please enter your age: 
+	0. Back`;
+	} else if (text.startsWith("1*") && text.split("*").length === 7) {
+		// Based on all inputs, provide a herb recommendation
+		const inputs = text.split("*");
+		const symptom =
+			inputs[1] === "1"
+				? "Headache"
+				: inputs[1] === "2"
+				? "Fever"
+				: inputs[1] === "3"
+				? "Stomachache"
+				: "Cough";
+		const province =
+			inputs[2] === "1"
+				? "Gauteng"
+				: inputs[2] === "2"
+				? "Western Cape"
+				: inputs[2] === "3"
+				? "KwaZulu-Natal"
+				: inputs[2] === "4"
+				? "Eastern Cape"
+				: inputs[2] === "5"
+				? "Free State"
+				: inputs[2] === "6"
+				? "Limpopo"
+				: inputs[2] === "7"
+				? "Mpumalanga"
+				: inputs[2] === "8"
+				? "North West"
+				: "Northern Cape";
+		const season =
+			inputs[3] === "1"
+				? "Summer"
+				: inputs[3] === "2"
+				? "Autumn"
+				: inputs[3] === "3"
+				? "Winter"
+				: "Spring";
+		const allergies =
+			inputs[4] === "1" ? `Allergies: ${inputs[5]}` : "No allergies";
+		const age = inputs[6];
+
+		// Example recommendation based on inputs
+		const recommendedHerb = `Based on your inputs (Symptom: ${symptom}, Province: ${province}, Season: ${season}, ${allergies}, Age: ${age}), we recommend Aloe Vera for cooling and anti-inflammatory effects. It can help with ${symptom.toLowerCase()}.`;
+
+		response = `END ${recommendedHerb}`;
 	} else {
 		// Handle unrecognized input
 		response = `END Invalid selection. Please try again.`;
 	}
 
 	// Send the response back to the API
-	res.set("Content-Type: text/plain");
+	res.set("Content-Type", "text/plain"); // Corrected header
 	res.send(response);
 });
 
