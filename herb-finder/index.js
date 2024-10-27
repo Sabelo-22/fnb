@@ -17,10 +17,10 @@ app.post("/ussd", (req, res) => {
 
 	if (text == "") {
 		// This is the first request. Start the response with CON
-		response = `CON Welcome to the Herb Finder App.
-    Please select an option:
-    1. Find herbs for ailments
-    2. View seasonal herbs
+		response = `CON Welcome to the Herb Finder App IMBEWU.
+     Access Natural Remedies bae on symptoms, Location and season:
+    1. Get Started
+    2. About This App
     3. Exit`;
 	} else if (text == "1") {
 		// User selects to find herbs for ailments
