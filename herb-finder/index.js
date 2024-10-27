@@ -27,14 +27,12 @@ app.post("/ussd", (req, res) => {
 		response = `CON Please enter your symptoms separated by commas (e.g., headache, cough).`;
 	} else if (text == "2") {
 		// User selects to view seasonal herbs
-		response = `CON Please select a season:
-    1. Summer
-    2. Autumn
-    3. Winter
-    4. Spring`;
+		response = `CON This app offers herb recommendations for common ailments.
+    Our suggestions are based on traditional South African herbal medicine, customized to your needs.
+    Press any key to continue.`;
 	} else if (text == "3") {
 		// User selects to exit
-		response = `END Thank you for using Herb Finder! Goodbye!`;
+		response = `END Thank you for using IMBEWU! Goodbye!`;
 	} else if (text.startsWith("1*")) {
 		// This is a second-level response where the user has entered symptoms
 		const symptoms = text.split("*").slice(1).join(", ");
