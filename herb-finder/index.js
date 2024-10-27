@@ -24,7 +24,13 @@ app.post("/ussd", (req, res) => {
     3. Exit`;
 	} else if (text == "1") {
 		// User selects to find herbs for ailments
-		response = `CON Please enter your symptoms separated by commas (e.g., headache, cough).`;
+		response = `CON Select your primary symptom:
+    1. Headache
+    2. Fever
+    3. Stomachache
+    4. Cough
+    5. Other (type in)
+    `;
 	} else if (text == "2") {
 		// User selects to view seasonal herbs
 		response = `CON This app offers herb recommendations for common ailments.
