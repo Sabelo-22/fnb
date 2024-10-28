@@ -129,7 +129,8 @@ app.post("/ussd", async (req, res) => {
 					messages: [
 						{
 							role: "system",
-							content: "You are an assistant providing herb recommendations.",
+							content:
+								"You are an assistant providing herb recommendations. you also give steps for preparation of the herbs and where it could be found.",
 						},
 						{
 							role: "user",
