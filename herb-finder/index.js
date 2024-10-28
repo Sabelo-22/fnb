@@ -15,13 +15,28 @@ app.post("/ussd", async (req, res) => {
 	let response = "";
 
 	if (text === "") {
-		// Initial menu options
-		response = `CON Welcome to the Herb Finder App IMBEWU.
+		// Initial disclaimer menu
+		response = `CON Welcome to the Herb Finder App IMBEWU. 
+		Please read the disclaimer:
+		1. This service provides natural remedy suggestions based on your symptoms.
+		2. Consult with a healthcare professional for serious health issues.
+		3. By continuing, you agree to these terms.
+		
+		Do you accept the terms?
+		1. Yes
+		2. No`;
+	} else if (text === "1") {
+		// User accepts the disclaimer
+		response = `CON Thank you for accepting the terms. 
+		Welcome to the Herb Finder App IMBEWU. 
 		Access Natural Remedies based on symptoms, location, season, allergies, and age:
 		1. Get Started
 		2. About This App
 		3. Exit`;
-	} else if (text === "1") {
+	} else if (text === "2") {
+		// User declines the disclaimer
+		response = `END Thank you for using our service. Goodbye!`;
+	} else if (text === "1*1") {
 		// User selects to get started and picks symptom
 		response = `CON Select your primary symptom:
 		1. Headache
@@ -34,15 +49,30 @@ app.post("/ussd", async (req, res) => {
 		// User chooses to type in their symptom
 		response = `CON Please type in your symptom:
 		0. Back`;
-	} else if (text === "2") {
-		// About the app
-		response = `CON This app offers herb recommendations for common ailments.
-		Our suggestions are based on traditional South African herbal medicine, customized to your needs.
-		Press any key to continue.
-		0. Back`;
-	} else if (text === "3") {
-		// Exit the app
-		response = `END Thank you for using IMBEWU! Goodbye!`;
+	} else if (text.startsWith("1*5*")) {
+		// If user has entered their symptom, proceed to province selection
+		const typedSymptom = text.split("*")[2];
+
+		if (typedSymptom.trim()) {
+			// Ensure that the input is not just whitespace
+			response = `CON Your symptom is: ${typedSymptom}. 
+			Select your province:
+			1. Gauteng
+			2. Western Cape
+			3. KwaZulu-Natal
+			4. Eastern Cape
+			5. Free State
+			6. Limpopo
+			7. Mpumalanga
+			8. North West
+			9. Northern Cape
+			10. Skip
+			0. Back`;
+		} else {
+			// If there's no valid input, prompt again
+			response = `CON Please type in your symptom:
+			0. Back`;
+		}
 	} else if (text.startsWith("1*") && text.split("*").length === 2) {
 		// After symptom selection, ask for province with skip option
 		response = `CON Select your province:
